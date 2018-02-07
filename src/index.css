@@ -1,0 +1,72 @@
+.game {
+    display: flex;
+    flex-direction: row;
+}
+.game-board {
+    width: 60%;
+}
+.game-board-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.square {
+    background: #fff;
+    border: 1px solid #999;
+    width: 20%;
+    height: 0;
+    padding-bottom: 20%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.square--1 {
+    background-color: black;
+}
+.square-1 {
+    background-color: green;
+}
+.square-2 {
+    background-color: red;
+}
+.square-3 {
+    background-color: greenyellow;
+    animation-name: player1Animation;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+.square-4 {
+    background-color: palevioletred;
+    animation-name: player2Animation;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes player1Animation {
+    from {background-color: greenyellow;}
+    to {background-color: rgb(184, 218, 134);}
+}
+
+@keyframes player2Animation {
+    from {background-color: palevioletred;}
+    to {background-color: rgb(236, 184, 201);}
+}
+
+.game-info {
+    width: 40%;
+}
+
+.game-history {
+    list-style: none;
+    background-color: #fff;
+    cursor: pointer;
+    padding: 0;
+    border: 1px solid black;
+}
+
+.game-history li:nth-child(2n+1) {
+    background-color: #999;
+}
