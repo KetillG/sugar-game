@@ -1,6 +1,7 @@
 .game {
     display: flex;
     flex-direction: row;
+    max-width: 1200px;
 }
 .game-board {
     width: 60%;
@@ -67,6 +68,9 @@
     border: 1px solid black;
 }
 
-.game-history li:nth-child(2n+1) {
-    background-color: #999;
+.game-history li:nth-child(2n+2) {
+    background-color: greenyellow;
+}
+.game-history li:nth-child(2n+3) {
+    background-color: palevioletred;
 }

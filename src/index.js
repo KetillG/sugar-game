@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// The square 
 function Square(props) {
   return (
     <button className={`square square-${props.value}`} onClick={props.onClick}>
@@ -11,12 +12,16 @@ function Square(props) {
 }
 
 class Board extends Component {
+  // Renders the board
   renderBoard() {
+    // For each square on the board
     const board = this.props.board.map(square => {
       let clickHandler;
+      // Add the click handler for clickable squares
       if(square.value > 2) {
         clickHandler = () => this.props.onClick(square.index);
       }
+      // Render the square
       return (
         <Square
           value={square.value}
@@ -53,6 +58,7 @@ class Game extends Component {
     this.state = this.getInitialState();
   }
 
+  // Creates a new initial state board
   resetBoard() {
     const board = [];
     const corners = [0, 4, 20, 24];
@@ -68,6 +74,7 @@ class Game extends Component {
     return board;
   }
 
+  // Initial state of the game for easy resetting
   getInitialState() {
     const initialState = {
       board: this.resetBoard(),
@@ -77,11 +84,19 @@ class Game extends Component {
     return initialState;
   }
 
+  // Handles clicking on the square
   handleClick(e) {
-    const board = this.state.board;
-    const boardExists = this.state.history.indexOf(board);
+    // Copies the old board by dereference
+    const board = this.state.board.map(square => {
+      const clone = {...square}
+      return clone;
+    });
+    // Gets index of current board in history
+    const boardExists = this.state.history.indexOf(this.state.board);
+    // If it existst in the history then wipe out history after that state
     const newHistory = boardExists === -1 ? this.state.history : this.state.history.slice(0, boardExists + 1);
 
+    // Checks where the player clicked and updates his position
     if(this.state.turn) {
       if(board[e - 5].value === 1) {
         board[e - 5].value = 0;
@@ -99,6 +114,8 @@ class Game extends Component {
         board[e].value = 2;
       }
     }
+
+    // Sets the game state to a updated one
     this.setState({
       board,
       turn: !this.state.turn,
@@ -108,8 +125,9 @@ class Game extends Component {
       })],
     });
   }
-
+  // Logic that dynamically adds valid places to the game board state
   addValidPlaces(board) {
+    // Player 1
     if(this.state.turn) {
       for(let i = 1; i < 24;i++) {
         if(board[i].value === 1) {
@@ -120,7 +138,7 @@ class Game extends Component {
           }
         }
       }
-    } else {
+    } else { // Player 2
       for(let i = 1; i < 24;i++) {
         if(board[i].value === 2) {
           if(i + 1 < (Math.floor(i / 5) + 1) * 5 && board[i+1].value === 0) {
@@ -134,7 +152,7 @@ class Game extends Component {
     
     return board
   }
-
+  // Returns true if game over
   gameOver() {
     const board = this.state.board;
     if(!this.state.turn) {
@@ -143,11 +161,11 @@ class Game extends Component {
       return board[9].value === 2 && board[14].value === 2 && board[19].value === 2;
     }
   }
-
+  // Resets the game state
   resetGame() {
     this.setState(this.getInitialState());
   }
-
+  // Handles shifting the game state to an older state
   timeShift(index) {
     this.setState({
       board: this.state.history[index],
@@ -167,20 +185,23 @@ class Game extends Component {
     // Checks if a player has won and also adds move indicators for player
     let liveBoard
     if(this.gameOver()) {
+      // Board is the static state of the board
       liveBoard = this.state.board;
+      // Overwrites the status
       status = this.state.turn ? 'Player 2 wins' : 'Player 1 wins';
     } else {
+      // Possible moves are added dynamically to the board
       liveBoard = this.addValidPlaces(this.state.board.map(square => {
         const clone = {...square}
         return clone;
       })); 
     } 
 
-    // Enables history scrolling
+    // Enables history scrolling by creating the sidemenu
     const history = [];
     for(let index in this.state.history) {
       history.push(
-        <li onClick={() => this.timeShift(index)}>
+        <li key={index} onClick={() => this.timeShift(index)}>
           Move: {index}
         </li>
       );
@@ -209,6 +230,6 @@ class Game extends Component {
 }
   
   // ========================================
-  
+  // Adds the game class to root
   ReactDOM.render(<Game />, document.getElementById("root"));
   
