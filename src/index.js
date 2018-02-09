@@ -142,7 +142,13 @@ class Game extends Component {
       const bestMoveRow = player.computeBestMove(transposedBoard, 1);
       const bestPositionIndex = player.getNextMove(transposedBoard[bestMoveRow], 1);
       //const bestPosition = bestMoveRow * 5 + bestPositionIndex;
-
+      if(bestPositionIndex < 1) {
+        this.setState({
+          turn: !this.state.turn,
+        });
+        return;
+      }
+      
       // Remove players current position
       transposedBoard[bestMoveRow][player.getPlayerPosition(transposedBoard[bestMoveRow], 1)] = 0;
       // Update the location of the player
@@ -169,6 +175,12 @@ class Game extends Component {
       const bestMoveRow = player.computeBestMove(transposedBoard, 2);
       const bestPositionIndex = player.getNextMove(transposedBoard[bestMoveRow], 2);
       //const bestPosition = bestMoveRow * 5 + bestPositionIndex;
+      if(bestPositionIndex < 1) {
+        this.setState({
+          turn: !this.state.turn,
+        });
+        return;
+      }
 
       // Remove players current position
       transposedBoard[bestMoveRow][player.getPlayerPosition(transposedBoard[bestMoveRow], 2)] = 0;
