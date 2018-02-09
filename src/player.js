@@ -11,6 +11,11 @@
 const hashedBoards = {};
 
 const computeBestMove = (board, player) => {
+    console.time("Timer");
+
+// computeBestMove(testBoard, 2);
+
+// console.timeEnd("Timer");
     // Get score for each move
     let topMove = computeMoveForRow(deepCopyBoard(board), 1, player);
     let midMove = computeMoveForRow(deepCopyBoard(board), 2, player);
@@ -24,8 +29,10 @@ const computeBestMove = (board, player) => {
     // Create an array of scores
     const scores = [topMove, midMove, botMove];
 
-    console.log(scores);
+    console.log('=== RUN ===');
     
+    console.log(scores);
+    console.timeEnd("Timer");
     // Find the index of highest score
     return scores.indexOf(Math.max(...scores)) + 1;
 }
@@ -39,7 +46,9 @@ const getBestMove = (board, player) => {
     
     // If the move is allowed then overwrite then illegal score
     if(isNextMoveAllowed(board, 1, player)) topMove = computeMoveForRow(deepCopyBoard(board), 1, player);
+    if (topMove === 1) return 1;
     if(isNextMoveAllowed(board, 2, player)) midMove = computeMoveForRow(deepCopyBoard(board), 2, player);
+    if (midMove === 1) return 1;
     if(isNextMoveAllowed(board, 3, player)) botMove = computeMoveForRow(deepCopyBoard(board), 3, player);
     
     // Check if current player could not move at all, then return next move for the previous player skipping this player turn
