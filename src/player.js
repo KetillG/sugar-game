@@ -7,6 +7,7 @@
 //     [0,0,0,1,0]
 // ];
 
+// The boards are stored here
 const hashedBoards = {};
 
 const computeBestMove = (board, player) => {
@@ -23,6 +24,8 @@ const computeBestMove = (board, player) => {
     // Create an array of scores
     const scores = [topMove, midMove, botMove];
 
+    console.log(scores);
+    
     // Find the index of highest score
     return scores.indexOf(Math.max(...scores)) + 1;
 }
