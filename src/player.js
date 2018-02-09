@@ -1,97 +1,84 @@
-const testBoard = 
-[
-    [0,0,0,0,0],
-    [0,0,1,2,0],
-    [0,0,2,0,0],
-    [0,1,0,2,0],
-    [0,0,0,1,0]
-];
+// const testBoard = 
+// [
+//     [0,0,0,0,0],
+//     [0,0,1,2,0],
+//     [0,0,2,0,0],
+//     [0,1,0,2,0],
+//     [0,0,0,1,0]
+// ];
 
 const hashedBoards = {};
 
 const computeBestMove = (board, player) => {
+    // Get score for each move
     let topMove = computeMoveForRow(deepCopyBoard(board), 1, player);
     let midMove = computeMoveForRow(deepCopyBoard(board), 2, player);
     let botMove = computeMoveForRow(deepCopyBoard(board), 3, player);
 
+    // Force score to min if the move is not allowed
     if(!isNextMoveAllowed(board, 1, player)) topMove = -2;
     if(!isNextMoveAllowed(board, 2, player)) midMove = -2;
     if(!isNextMoveAllowed(board, 3, player)) botMove = -2;
+    
+    // Create an array of scores
+    const scores = [topMove, midMove, botMove];
 
-    ///console.log('==== END ====');
-    
-    ///console.log(topMove);
-    ///console.log(midMove);
-    ///console.log(botMove);
-
-    
-    const scores = [topMove, midMove, botMove].map(score => score === 0 ? /*Number.MIN_SAFE_INTEGER*/ 0 :  score);
-
-    console.log(scores);
-    
-    
-    ///console.log('Best index is: ', scores.indexOf(Math.max(...scores)) + 1);
-    
-    
-    ///console.log(' ');
+    // Find the index of highest score
     return scores.indexOf(Math.max(...scores)) + 1;
 }
 
-
 // Always treats current player as the player moving horizontal
 const getBestMove = (board, player) => {
-    let topMove = -1;
-    let midMove = -1;
-    let botMove = -1;
+    // Initialize each move as illegal
+    let topMove = -2;
+    let midMove = -2;
+    let botMove = -2;
     
+    // If the move is allowed then overwrite then illegal score
     if(isNextMoveAllowed(board, 1, player)) topMove = computeMoveForRow(deepCopyBoard(board), 1, player);
     if(isNextMoveAllowed(board, 2, player)) midMove = computeMoveForRow(deepCopyBoard(board), 2, player);
     if(isNextMoveAllowed(board, 3, player)) botMove = computeMoveForRow(deepCopyBoard(board), 3, player);
     
-    //const score = topMove + midMove + botMove;
-    ///console.log(Math.max(topMove, midMove, botMove));
-    //return score
-    return Math.max(topMove, midMove, botMove)
+    // Check if current player could not move at all, then return next move for the previous player skipping this player turn
+    let max = Math.max(topMove, midMove, botMove);
+    if(max === -2) max = -getBestMove(transposeBoard(board), getNextPlayer(player));
+    
+    return max;
+    
 }
 
+// Check if next move is allowed, returns true if so
 const isNextMoveAllowed = (board, rowIndex, player) => {
+    // Gets the current row
     const row = board[rowIndex];
     // Next position
     const nextMove = getNextMove(row, player);
-    // If end hit then exit
-    ///console.log('Next move:', nextMove);
-    
+
     return nextMove !== -1;
 }
 
 const computeMoveForRow = (board, rowIndex, player) => {
-
-    ///console.log('STARTING');
+    // Gets the current row
     const row = board[rowIndex];
     // Next position
     const nextMove = getNextMove(row, player);
 
     // Current position
     const playerPosition = getPlayerPosition(row, player);
-    // Update position
     
+    // Update position
     board[rowIndex][playerPosition] = 0;
     board[rowIndex][nextMove] = player;
     
     // Check if this won the game
     if(checkIfWon(board)) return 1;
     
-    // Switch players and go deeper into game tree
-    /////console.log('kkk');
-    
-    // Check if current board has already been computed
+    // Check if current board has already been computed, if so return the known score
     const boardScore = getBoardScore(board);
-    ///console.log(boardScore)
     if(boardScore) return hashedBoards[board];
     
     // If board hasnt been computed then compute it
     const computedScore = -getBestMove(transposeBoard(board), getNextPlayer(player));
-    ///console.log('Score ',computedScore);
     
     // Store the computed score for the board
     hashedBoards[board] = computedScore;
@@ -99,15 +86,19 @@ const computeMoveForRow = (board, rowIndex, player) => {
     return computedScore;
 }
 
+// Return true if current board score has been computed
 const getBoardScore = (board) => hashedBoards.hasOwnProperty(board);
 
 // Returns next move for the player
 const getNextMove = (row, player) => {
     const playerPosition = getPlayerPosition(row, player);
-    
+    // If at end
     if ( playerPosition === 4 ) return -1;
+    // Check if next is free
     if ( row[playerPosition + 1] === 0 ) return playerPosition + 1;
+    // Else check if next next is free
     if ( row[playerPosition + 2] === 0 ) return playerPosition + 2;
+    // Else cant move
     return -1;
 }
 
@@ -126,11 +117,11 @@ const getNextPlayer = (player) => player === 1 ? 2 : 1;
 // Copies array of array with dereferencing
 const deepCopyBoard = (board) => board.map(row => [...row]);
 
-console.time("Timer");
+// console.time("Timer");
 
-computeBestMove(testBoard, 2);
+// computeBestMove(testBoard, 2);
 
-console.timeEnd("Timer");
+// console.timeEnd("Timer");
 
 module.exports = {
     computeBestMove,
