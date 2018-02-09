@@ -8,7 +8,7 @@ import './index.css';
 function Square(props) {
   return (
     <button className={`square square-${props.value}`} onClick={props.onClick}>
-      <p>{props.value}</p>
+     
     </button>
   );
 }
@@ -255,6 +255,12 @@ class Game extends Component {
       turn: index % 2 === 0,
     });
   }
+  // Allows player to pass his turn
+  passTurn() {
+    this.setState({
+      turn: !this.state.turn,
+    });
+  }
 
   render() {
     // Shows which player turn it is
@@ -267,7 +273,8 @@ class Game extends Component {
 
     // Checks if a player has won and also adds move indicators for player
     let liveBoard
-    if(this.gameOver()) {
+    const gameOver = this.gameOver();
+    if(gameOver) {
       // Board is the static state of the board
       liveBoard = this.state.board;
       // Overwrites the status
@@ -290,6 +297,8 @@ class Game extends Component {
       );
     }
 
+    const canPcPlay = gameOver ? null : () => this.computerTurn();
+
     return (
       <div className="game">
         <div className="game-board">
@@ -299,14 +308,17 @@ class Game extends Component {
           />
         </div>
         <div className="game-info">
-          <button className="reset-game" onClick={() => this.computerTurn()}>
+        <button className="button pass-turn" onClick={() => this.passTurn()}>
+            Pass turn
+          </button>
+          <button className="button pc-turn" onClick={canPcPlay}>
             Make computer play
           </button>
           <div>{status}</div>
           <ul className="game-history">
             {history}
           </ul>
-          <button className="reset-game" onClick={() => this.resetGame()}>
+          <button className="button reset-game" onClick={() => this.resetGame()}>
             New game
           </button>
         </div>

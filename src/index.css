@@ -74,3 +74,23 @@
 .game-history li:nth-child(2n+3) {
     background-color: palevioletred;
 }
+
+.button {
+    width: 100%;
+    background-color: #fff;
+    height: 30px;
+    border: 1px solid black;
+    margin-bottom: 5px;
+}
+.pass-turn {
+    background-color: pink;
+}
+
+.pc-turn {
+    height: 60px;
+    background-color: aqua;
+}
+
+.reset-game {
+    background-color: darkorange
+}

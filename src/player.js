@@ -8,14 +8,11 @@
 // ];
 
 // The boards are stored here
-const hashedBoards = {};
+let hashedBoards = {};
 
 const computeBestMove = (board, player) => {
     console.time("Timer");
 
-// computeBestMove(testBoard, 2);
-
-// console.timeEnd("Timer");
     // Get score for each move
     let topMove = computeMoveForRow(deepCopyBoard(board), 1, player);
     let midMove = computeMoveForRow(deepCopyBoard(board), 2, player);
@@ -29,10 +26,8 @@ const computeBestMove = (board, player) => {
     // Create an array of scores
     const scores = [topMove, midMove, botMove];
 
-    console.log('=== RUN ===');
-    
-    console.log(scores);
     console.timeEnd("Timer");
+
     // Find the index of highest score
     return scores.indexOf(Math.max(...scores)) + 1;
 }
