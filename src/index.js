@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import player from './player.js';
 import './index.css';
+
 
 // The square 
 function Square(props) {
@@ -125,6 +127,75 @@ class Game extends Component {
       })],
     });
   }
+  // The pc does the next move
+  computerTurn() {
+    // Turns the board from an array of objects to 2d array of values
+    const board = this.state.board
+    const boardFlat = board.map(square => square.value);
+    const board2d = [];
+    for(let i = 0; i < 5; i++) {
+      board2d[i] = boardFlat.slice(5 * i, 5 * i + 5);
+    }
+
+    if(this.state.turn) {
+      const transposedBoard = player.transposeBoard(board2d);
+      const bestMoveRow = player.computeBestMove(transposedBoard, 1);
+      const bestPositionIndex = player.getNextMove(transposedBoard[bestMoveRow], 1);
+      //const bestPosition = bestMoveRow * 5 + bestPositionIndex;
+
+      // Remove players current position
+      transposedBoard[bestMoveRow][player.getPlayerPosition(transposedBoard[bestMoveRow], 1)] = 0;
+      // Update the location of the player
+      transposedBoard[bestMoveRow][bestPositionIndex] = 1;
+      // Reverse the board
+      const updatedBoard = player.transposeBoard(transposedBoard);
+
+      const flatUpdatedBoard = updatedBoard.reduce((a, b) => a.concat(b), []);
+
+      const newBoard = flatUpdatedBoard.map((value, i) => {
+        return {index: i, value: value};
+      });
+
+      this.setState({
+        board: newBoard,
+        turn: !this.state.turn,
+        history: [...this.state.history, newBoard.map(square => {
+          const clone = {...square}
+          return clone;
+        })],
+      });
+    } else {
+      const transposedBoard = board2d;
+      const bestMoveRow = player.computeBestMove(transposedBoard, 2);
+      const bestPositionIndex = player.getNextMove(transposedBoard[bestMoveRow], 2);
+      //const bestPosition = bestMoveRow * 5 + bestPositionIndex;
+
+      // Remove players current position
+      transposedBoard[bestMoveRow][player.getPlayerPosition(transposedBoard[bestMoveRow], 2)] = 0;
+      // Update the location of the player
+      transposedBoard[bestMoveRow][bestPositionIndex] = 2;
+      // Reverse the board
+      const updatedBoard = transposedBoard;
+
+      const flatUpdatedBoard = updatedBoard.reduce((a, b) => a.concat(b), []);
+
+      const newBoard = flatUpdatedBoard.map((value, i) => {
+        return {index: i, value: value};
+      });
+
+      this.setState({
+        board: newBoard,
+        turn: !this.state.turn,
+        history: [...this.state.history, newBoard.map(square => {
+          const clone = {...square}
+          return clone;
+        })],
+      });
+    }
+    
+  }
+
+
   // Logic that dynamically adds valid places to the game board state
   addValidPlaces(board) {
     // Player 1
@@ -216,6 +287,9 @@ class Game extends Component {
           />
         </div>
         <div className="game-info">
+          <button className="reset-game" onClick={() => this.computerTurn()}>
+            Make computer play
+          </button>
           <div>{status}</div>
           <ul className="game-history">
             {history}

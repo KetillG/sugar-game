@@ -1,19 +1,25 @@
 const testBoard = 
 [
-    [0,0,0,0,0],
-    [0,0,0,1,2],
-    [0,0,2,0,0],
-    [0,2,1,0,0],
-    [0,1,0,0,0]
+    [0,1,1,1,0],
+    [2,0,0,0,0],
+    [2,0,0,0,0],
+    [2,0,0,0,0],
+    [0,0,0,0,0]
 ];
+
+const hashedBoards = {};
 
 computeBestMove = (board, player) => {
     const topMove = computeMoveForRow(deepCopyBoard(board), 1, player);
     const midMove = computeMoveForRow(deepCopyBoard(board), 2, player);
     const botMove = computeMoveForRow(deepCopyBoard(board), 3, player);
 
-    console.log(topMove, midMove, botMove);
+    console.log(topMove);
+    console.log(midMove);
+    console.log(botMove);
+
     
+
 }
 
 
@@ -25,11 +31,12 @@ getBestMove = (board, player) => {
     const botMove = computeMoveForRow(deepCopyBoard(board), 3, player);
     
     const score = topMove + midMove + botMove;
-    console.log(score);
+    //console.log(score);
     return score
 }
 
 computeMoveForRow = (board, rowIndex, player) => {
+
     const row = board[rowIndex];
     // Next position
     const nextMove = getNextMove(row, player);
@@ -47,11 +54,23 @@ computeMoveForRow = (board, rowIndex, player) => {
     if(checkIfWon(board)) return 1;
     
     // Switch players and go deeper into game tree
-    console.log('kkk');
+    //console.log('kkk');
     
+    // Check if current board has already been computed
+    const boardScore = getBoardScore(board);
+    if(boardScore) return hashedBoards[board];
     
-    return -getBestMove(transposeBoard(board), getNextPlayer(player));
+    // If board hasnt been computed then compute it
+    const computedScore = -getBestMove(transposeBoard(board), getNextPlayer(player));
+
+    // Store the computed score for the board
+    hashedBoards[board] = computedScore;
+
+    return computedScore;
 }
+
+getBoardScore = (board) => hashedBoards.hasOwnProperty(board);
+
 // Returns next move for the player
 getNextMove = (row, player) => {
     playerPosition = getPlayerPosition(row, player);
@@ -77,4 +96,8 @@ getNextPlayer = (player) => player === 1 ? 2 : 1;
 // Copies array of array with dereferencing
 deepCopyBoard = (board) => board.map(row => [...row]);
 
-computeBestMove(testBoard, 2)
+// console.time("Timer");
+
+// computeBestMove(testBoard, 2);
+
+// console.timeEnd("Timer");
